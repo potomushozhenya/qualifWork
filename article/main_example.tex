@@ -1,0 +1,537 @@
+% ОБЯЗАТЕЛЬНО ИМЕННО ТАКОЙ documentclass!
+% (Основной кегль = 14pt, поэтому необходим extsizes)
+% Формат, разумеется, А4
+% article потому что стандарт не подразумевает разделов
+% Глава = section, Параграф = subsection
+% (понятия "глава" и "параграф" из документа, описывающего диплом)
+\documentclass[a4paper,article,14pt]{extarticle}
+
+% Подключаем главный пакет со всем необходимым
+\usepackage{spbudiploma_tempora}
+
+% Пакеты по желанию (самые распространенные)
+% Хитрые мат. символы
+\usepackage{euscript}
+% Таблицы
+\usepackage{longtable}
+\usepackage{makecell}
+% Картинки (можно встявлять даже pdf)
+\usepackage[pdftex]{graphicx}
+% Удобные дифференциалы
+\usepackage{physics}
+% Матрицы и таблицы
+\usepackage{amsmath}
+\usepackage{multirow}
+
+\usepackage{amsthm,amssymb, amsmath}
+\usepackage{textcomp}
+
+
+\begin{document}
+
+% Титульник в файле titlepage.tex
+\input{titlepage_example.tex}
+
+% Содержание
+\tableofcontents
+\pagebreak
+
+\specialsection{Введение}
+В процессе развития классических методов численного решения обыкновенных дифференциальных уравнений (ОДУ), таких как методы Рунге — Кутты (РК), экстраполяции и Адамса, которые изначально были разработаны для ручного расчёта, наблюдается постоянное расширение спектра решаемых задач, обусловленное технологическим прогрессом в области компьютерных вычислений.
+
+С ростом мощности вычислительных машин появляются новые возможности для решения более сложных задач. Вместе с этим возникают и новые проблемы, связанные с приближением и устойчивостью более эффективных и надёжных алгоритмов численного интегрирования систем обыкновенных дифференциальных уравнений (СОДУ).
+
+Отсутствие однородности в реальных задачах, когда встречаются задачи, которые не являются исключительно жёсткими или нежёсткими, а представляют собой их сочетание, стало важным стимулом для улучшения и развития численных методов решения как жёстких, так и нежёстких задач.
+
+Рассматриваемая далее система вида (\ref{eq:base_system}) возникает при описании задач небесной механики, оптимального управления, физики высоких энергий \cite{srk}.
+\pagebreak
+
+\specialsection{Постановка задачи}
+Методы решения структурно разделенных систем обыкновенных дифференциальных уравнений класса A(2) хорошо себя зарекомендовали с точки зрения критерия "вычислительные затраты/точность", а также показывают себя лучше явных методов РК в численной устойчивости.
+
+С другой стороны для жестких задач используются неявные методы РК, однако требуют наибольшего времени вычисления и ресурсов. Поскольку при их использовании возникает необходимость в решении векторной нелинейной системы.
+
+Также для жестких задач используют моно-неявные методы РК, поскольку они хорошо себя показывают в решении жестких задач с вычислительной точки зрения \cite{mirk}.
+
+В связи с двумя вышеперечисленными пунктами возникла мысль об объединении этих двух методов для анализа поведения полученного метода на жестких и нежестких задачах. Поскольку он должен вычисляться быстрее чем неявный РК, поскольку ему не нужно решать нелинейную систему, а только несколько нелинейных уравнений. А также должен неплохо себя показывать на жестких задачах.
+
+В рамках данной работы планируется построить метод 4-го порядка: вывести условия порядка, предложить схему, а также рассмотреть вопрос об устойчивости данного метода. 
+\pagebreak
+
+\specialsection{Обзор литературы}
+Для написания данной работы были изучены и использованы научная и учебно-методическая литература, статьи студентов факультета прикладной математики - процессов управления.
+
+Основными источниками стали монография доктора физико-
+математических наук Олемского Игоря Владимировича \cite{srk}, описывающая структурные методы и приводящая их расчетные схемы и условия порядка, и статья \cite{mirk}, отражающая моно-неявные методы и приводящяя их расчетные схемы. Информация по устойчивости была взята из магистерской диссертации Винничек Никиты Николаевича.
+\pagebreak
+
+\section{Существующие методы}
+\subsection{Система}
+Все дальнейшие рассуждения, кроме \ref{subsecMIRK} будем вести о следующей системе:
+\begin{equation}
+\begin{cases}
+         \dv{y_1}{x} &= f_1(x,y_2) \\
+         \dv{y_2}{x} &= f_2(x,y_1)
+\end{cases}
+\label{eq:base_system}
+\end{equation}
+\begin{equation}
+    y_{s}(X_{0}) = y_{s0}, \quad s = 1,2, \quad x \in [X_{0},X_{1}] \subset R,
+\end{equation}
+\subsection{Структурный метод}
+По \cite{srk} схема рассчета для структурного метода РК описывается:
+\begin{equation}
+    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2 
+\end{equation}
+\begin{equation}
+\begin{aligned}
+    k_{1l} &= 
+\begin{cases}
+    f_{1}(x + c_{11} h, y_{2i}), \quad l = 1 \\
+    f_{1}(x + c_{1l} h, y_{2i} + h \sum_{n=1}^{l-1} a_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1}
+\end{cases}
+    \\k_{2l} &= 
+    f_{2}(x + c_{2l} h, y_{1i} + h \sum_{n=1}^{l-1} a_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2}
+\end{aligned}
+\end{equation}
+\subsection{Мононеявный метод}\label{subsecMIRK}
+По \cite{mirk} схема рассчета для моно-неявного метода РК описывается:
+\begin{equation}
+    y_{i+1} = y_{i} + h \sum_{l=1}^{s} b_{l} k_{l}
+\end{equation}
+\begin{equation}
+    k_{l} = 
+    f(x + c_{l} h, (1 - v_{l}) y_{1i} + v_{l} y_{1,i+1} + h \sum_{n=1}^{s} x_{ln} k_{n}), \quad l = 1, \dotsc, s
+\end{equation}
+\pagebreak
+
+\section{Предложенный метод}
+\subsection{Схема}
+\begin{equation}
+    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2
+    \label{eq:method}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+    k_{1l} &= 
+\begin{cases}
+    f_{1}(x + c_{11} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1}), \quad l = 1 \\
+    f_{1}(x + c_{1l} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1} + h \sum_{n=1}^{l-1} x_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1}
+\end{cases}
+    \\k_{2l} &= 
+    f_{2}(x + c_{2l} h, (1 - v_{2l}) y_{1i} + v_{2l} y_{1,i+1} + h \sum_{n=1}^{l-1} x_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2}
+\end{aligned}
+\end{equation}
+\begin{equation}
+    s_{1} = 3 \quad s_{2} = 2
+\end{equation}
+\begin{equation}
+I_{i} = \underbrace{\left[
+    1, \dotsc, 1
+    \right]}_{i}
+\end{equation}
+Коэффициенты в общем виде выглядят следующим образом
+\begin{equation}
+C_{1} =
+\begin{pmatrix}
+    c_{1,1} & 0 & 0 \\
+    0 & c_{1,2} & 0 \\
+    0 & 0 & c_{1,3}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+C_{2} =
+\begin{pmatrix}
+    c_{2,1} & 0 \\
+    0 & c_{2,2}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+X_{1} = 
+\begin{pmatrix}
+    0 & 0 \\
+    x_{1,2,2,1} & 0 \\
+    x_{1,3,2,1} & x_{1,3,2,2}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+X_{2} = 
+\begin{pmatrix}
+    x_{2,1,1,1} & 0 & 0\\
+    x_{2,2,1,1} & x_{2,2,1,2} & 0 
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+    v_{1} = \left[
+    v_{1,2,1}, v_{1,2,2}, v_{1,2,3}
+    \right]
+\end{equation}
+\begin{equation}
+    v_{2} = \left[
+    v_{2,1,1}, v_{2,1,2}
+    \right]
+\end{equation}
+\begin{equation}
+    b_{1} = \left[
+    b_{1,1}, b_{1,2}, b_{1,3}
+    \right]
+\end{equation}
+\begin{equation}
+    b_{2} = \left[
+    b_{2,1}, b_{2,2}
+    \right]
+\end{equation}
+Вспомогательные матрицы для удобства записи условий порядка.
+\begin{equation}
+A_{1} = 
+\begin{pmatrix}
+    v_{1,2,1} b_{2,1} & v_{1,2,1} b_{2,2} \\
+    v_{1,2,2} b_{2,1} + x_{1,2,2,1} & v_{1,2,2} b_{2,2} \\
+    v_{1,2,3} b_{2,1} + x_{1,3,2,1} & v_{1,2,3} b_{2,2} + x_{1,3,2,2}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+A_{2} = 
+\begin{pmatrix}
+    v_{2,1,1} b_{1,1} + x_{2,1,1,1} & v_{2,1,1} b_{1,2} & v_{2,1,1} b_{1,3}\\
+    v_{2,1,2} b_{1,1} + x_{2,2,1,1} & v_{2,1,2} b_{1,2} + x_{2,2,1,2} & v_{2,1,2} b_{1,3}
+\end{pmatrix}
+\end{equation}
+
+\subsection{Условия порядка}\label{order_conditions}
+Условия порядка для предложенного метода 4-го порядка. Полученны как удовлетворенные условия на соответствующие деревья из \cite{tree}.
+Далее для s = 1, 2
+\begin{equation}
+U_{1} = I_{3}, \quad U_{2} = I_{2}
+\end{equation}
+\begin{equation}
+A_{s} U_{s} - C_{s} U_{s}
+\end{equation}
+\begin{equation}
+B_{s} U_{s} = 1
+\end{equation}
+\begin{equation}
+B_{s} C_{s}^{i} U_{s} = \frac{1}{i+1}, \quad i = 1, 2, 3
+\end{equation}
+\begin{equation}
+B_{s} A_{s} C_{s}^{i} U_{s} = \frac{1}{6*i}, \quad i = 1, 2
+\end{equation}
+\begin{equation}
+B_{s} C_{s} A_{s} C_{s} U_{s} = \frac{1}{8}
+\end{equation}
+\begin{equation}
+B_{s} A_{s} A_{s} C_{s} U_{s} = \frac{1}{24}
+\end{equation}
+
+\subsection{Удовлетворенные условия}\label{conditions}
+Далее будут приведены коэффициенты, удовлетворяющие условиям из \ref{order_conditions}. При их вычислении два раза были выбраны корни для квадратных уравнений, после чего получилась система с одним параметром. Параметр был выбран равный 0.
+
+\begin{equation}
+    c_{1} = \left[
+    1, \frac{2}{3} + \frac{\sqrt{2}}{6}, \frac{\sqrt{2}}{6}
+    \right]
+\end{equation}
+\begin{equation}
+    c_{2} = \left[
+    \frac{1}{2} - \frac{\sqrt{3}}{6}, \frac{2}{3} + \frac{\sqrt{2}}{6}, \frac{\sqrt{2}}{6}
+    \right]
+\end{equation}
+\begin{equation}
+    v_{1} = \left[
+    1, \frac{2}{3} + \frac{\sqrt{2}}{6} - \frac{\sqrt{3}}{6} + \frac{\sqrt{6}}{18}, \frac{-\sqrt{6}}{6} + \frac{\sqrt{2}}{6} + \frac{\sqrt{3}}{18}
+    \right]
+\end{equation}
+\begin{equation}
+    v_{2} = \left[
+    \frac{2}{3} - \frac{\sqrt{3}}{6}, \frac{4}{3} - \frac{\sqrt{2}}{3} + \frac{\sqrt{3}}{6}
+    \right]
+\end{equation}
+\begin{equation}
+    b_{1} = \left[
+    \frac{-1}{17} - \frac{3\sqrt{2}}{17}, \frac{3}{4}, \frac{21}{68} + \frac{3\sqrt{2}}{17}
+    \right]
+\end{equation}
+\begin{equation}
+    b_{2} = \left[
+    \frac{1}{2}, \frac{1}{2}
+    \right]
+\end{equation}
+\begin{equation}
+X1 = 
+\begin{pmatrix}
+    0, 0\\
+    \frac{-\sqrt{6}}{18} + \frac{\sqrt{3}}{6}, 0\\
+    \frac{\sqrt{6}}{6} - \frac{\sqrt{3}}{18}, 0
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+X2 = 
+\begin{pmatrix}
+    \frac{-1}{6}, 0, 0\\
+    \frac{1}{6} + \frac{\sqrt{2}}{3}, -1, 0
+\end{pmatrix}
+\end{equation}
+
+Удовлетворенные условия порядка в общем виде можно посмотреть в репозитории \cite{code}.
+\pagebreak
+
+\section{Численные эксперименты}
+Будем проводить эксперименты для установления порядка метода. Для эксеприментов будем использовать мною написанный код с вышепредложенным методом \cite{code}. \newline
+Рассмотрим задачу вида
+\begin{equation}
+\begin{aligned}
+    y_{1}' &= -y_{2} + e^{-x} \\
+    y_{2}' &= y_{1} + e^{-x} \\
+    x_{0} &= 0, y_{1}(0) = y_{2}(0) = 1, x_{end} = 1
+\end{aligned}
+\end{equation}
+Аналитическое решение выглядит следующим образом
+\begin{equation}
+\begin{aligned}
+    y_{1} &= 2 \cos(x) - \sin(x) - e^{-x} \\
+    y_{2} &= 2 \sin(x) + \cos(x)
+\end{aligned}
+\end{equation}
+Далее приведена таблица с максимальным модулем разности с аналитическим решением и соответствующим шагом. 
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+0.1& 0.05 & 0.025 & 0.0125 \\ 
+$1.46050\cdot10^{-6}$ & $8.32381\cdot10^{-8}$ & $5.20788\cdot10^{-9}$ & $3.29724\cdot10^{-10}$ \\ 
+\hline
+\end{tabular}
+\end{center}
+Из чего можем сделать вывод, что порядок для этой задачи соблюдается.
+Далее рассмотрим задачу
+\begin{equation}
+\begin{aligned}
+    y_{1}' &= -y_{2} + e^{-20x} \\
+    y_{2}' &= y_{1} + e^{-20x} \\
+    x_{0} &= 0, y_{0} = (1,1), x_{end} = 1
+\end{aligned}
+\end{equation}
+Аналитическое решение выглядит следующим образом
+\begin{equation}
+\begin{aligned}
+    y_{1} &= \frac{422}{401} \cos(x) - \frac{420}{401} \sin(x) - \frac{21}{401 e^{20x}} \\
+    y_{2} &= \frac{420}{401} \cos(x) + \frac{422}{401} \sin(x) - \frac{19}{401 e^{20x}}
+\end{aligned}
+\end{equation}
+Далее приведена таблица с максимальным модулем разности с аналитическим решением и соответствующим шагом.
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+0.1& 0.05 & 0.025 & 0.0125 \\ 
+$2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485\cdot10^{-8}$ \\ 
+\hline
+\end{tabular}
+\end{center}
+\pagebreak
+
+\section{Устойчивость метода}
+\subsection{Функция устойчивости в общем виде}
+\begin{equation}
+\begin{cases}
+    y_{1}'(x) = \lambda y_{2}(x) \\
+    y_{2}'(x) = \lambda y_{1}(x)
+\end{cases}
+\label{eq:test_system}
+\end{equation}
+
+Для получения функции устойчивости для предложенного метода рассмотрим результат применения одного шага метода (\ref{eq:method}) к системе (\ref{eq:test_system}). Можем рассматривать уравнение с одинаковыми собственными числами, поскольку систему с любыми двумя собственными числами можно свести к такому виду \cite{stability}.
+
+\begin{equation}
+\begin{aligned}
+    y_{11} = y_{10} + z b_1^T Y_{12} \\
+    y_{21} = y_{20} + z b_2^T Y_{21}
+\end{aligned}    
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+    Y_{12i} = (1 - v_{1i}) y_{20} + v_{1i} y_{21} + \sum_{j=1}^{i-1} x_{12ij} f_{2} (Y_{21j}) \\
+    Y_{21i} = (1 - v_{2i}) y_{10} + v_{2i} y_{11} + \sum_{j=1}^{i} x_{21ij} f_{1} (Y_{12j})
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+    Y_{21} = (I_{s2} - v_{2}) y_{10} + v_{2} y_{11} + z X_{21} Y_{12} \\
+    Y_{12} = (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} + z X_{12} Y_{21}
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+    \begin{pmatrix} Y_{12}\\ Y_{21} \end{pmatrix}
+    = \begin{pmatrix}
+        E & -z X_{12} \\
+        -z X_{21} & E
+    \end{pmatrix}^{-1}
+    \begin{pmatrix}
+        (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} \\
+        (I_{s2} - v_{2}) y_{10} + v_{2} y_{11}
+    \end{pmatrix}
+\end{equation}
+
+\begin{equation}
+    \begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
+    = 
+    \begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+    + z
+    \begin{pmatrix}
+         b_{1}^{T} & 0 \dotsc 0 \\
+         0 \dotsc 0 & b_{2}^{T}
+    \end{pmatrix}
+    \begin{pmatrix}
+        E & -z X_{12} \\
+        -z X_{21} & E
+    \end{pmatrix}^{-1}
+    \begin{pmatrix}
+        (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} \\
+        (I_{s2} - v_{2}) y_{10} + v_{2} y_{11}
+    \end{pmatrix}
+\end{equation}
+\begin{equation}
+\begin{pmatrix}
+         b_{1}^{T} & 0 \dotsc 0 \\
+         0 \dotsc 0 & b_{2}^{T}
+    \end{pmatrix}
+    \begin{pmatrix}
+        E & -z X_{12} \\
+        -z X_{21} & E
+    \end{pmatrix}^{-1}
+=
+\begin{pmatrix}
+    d_{11} & d_{12} \\
+    d_{21} & d_{22}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+    \begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
+    = 
+    \begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+    + z
+    \begin{pmatrix}
+    d_{11} & d_{12} \\
+    d_{21} & d_{22}
+    \end{pmatrix}
+    \left[
+    \begin{pmatrix}
+        (I_{s1} - v_{1}) y_{20} \\
+        (I_{s2} - v_{2}) y_{10} 
+    \end{pmatrix}
+    +
+    \begin{pmatrix}
+        v_{1} y_{21} \\
+        v_{2} y_{11} 
+    \end{pmatrix}
+    \right]
+\end{equation}
+\begin{equation}
+\begin{pmatrix}
+    1 - z d_{12} v_{2} & -z d_{11} v_{1} \\
+    -z d_{22} v_{2} & 1 - z d_{21} v_{1}
+\end{pmatrix}
+\begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
+=
+\begin{pmatrix}
+    1 + z d_{12} (I_{s2} - v_{2}) & z d_{11} (I_{s1} - v_{1}) \\
+    z d_{22} (I_{s2} - v_{2}) & 1 + z d_{21} (I_{s1} - v_{1})
+\end{pmatrix}
+\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+\end{equation}
+\begin{equation}
+P(z, w_{1}, w_{2}) = 
+\begin{pmatrix}
+    1 + z d_{12} w_{2} & z d_{11} w_{1} \\
+    z d_{22} w_{2} & 1 + z d_{21} w_{1}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+    R(z) = P^{-1}(z , -v_{1}, -v_{2}) P(z, I_{s1} - v_{1}, I_{s2} - v_{2})
+    \label{eq:stability_general}
+\end{equation}
+\begin{equation}
+\begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
+    = R(z)
+\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+\end{equation}
+
+\subsection{Функция устойчивости для метода}
+
+Подставим в (\ref{eq:stability_general}) коэффициенты из \ref{conditions}.
+\begin{equation}
+\begin{pmatrix}
+    \frac{-1 - \sqrt{2}}{2 \sqrt{2} + 5} & \frac{3}{4} &  \frac{6 \sqrt{2} + 9}{8 \sqrt{2} + 20} & 0 & 0 \\
+    0 & 0 & 0 & \frac{1}{2} & \frac{1}{2}
+\end{pmatrix}
+\begin{pmatrix}
+    1 & 0 & 0 & 0 & 0\\
+    0 & 1 & 0 & -z (\frac{-\sqrt{6}}{18} + \frac{\sqrt{3}}{6}) & 0\\
+    0 & 0 & 1 & -z (\frac{\sqrt{6}}{6} - \frac{\sqrt{3}}{18}) & 0\\
+    z \frac{1}{6} & 0 & 0 & 1 & 0 \\
+    -z (\frac{1}{6} + \frac{\sqrt{2}}{3}) & z & 0 & 0 & 1
+\end{pmatrix}^{-1}
+=
+ \begin{pmatrix}
+    d_{11} & d_{12} \\
+    d_{21} & d_{22}
+\end{pmatrix}
+\end{equation}
+\begin{equation}
+\begin{gathered}
+    d_{11} = \left[
+    \frac{-\sqrt{3} (36 \sqrt{6} + 17 z^{2} + 12 \sqrt{3})}{612}, \frac{3}{4}, \frac{21}{68} + \frac{3 \sqrt{2}}{17}
+    \right] \\
+    d_{12} = \left[
+    \frac{\sqrt{3} z}{6}, 0
+    \right] \\
+    d_{21} = \left[
+    \frac{-(\sqrt{6} - 3 \sqrt{3}) z (36 \sqrt{6} + 7 z^{2} + 24 \sqrt{3})}{1512}, \frac{-z}{2}, 0
+    \right] \\
+    d_{22} = \left[
+    \frac{(\sqrt{6} - 3 \sqrt{3}) (-18 \sqrt{3} + 7 z^{2} - 6 \sqrt{6})}{252}, \frac{1}{2}
+    \right]
+\end{gathered}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+    R(z) = \\
+\begin{pmatrix}
+    \frac{(-11 + 6 \sqrt{3}) (13 z^{4} - 228 \sqrt{3} z^{2} - 132 z^{2} - 576 \sqrt{3} - 432)}{13 (z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432)} & 
+    \frac{(-2 + \sqrt{3}) (z^{2} + 12) (z^{2} - 12 \sqrt{3}) z}{z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432}\\
+    \frac{12 (-5 + 3 \sqrt{3}) (z^{2} + 6 \sqrt{3} + 18) z}{z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432} &
+    \frac{(-11 + 6 \sqrt{3}) (13 z^{4} - 228 \sqrt{3} z^{2} - 132 z^{2} - 576 \sqrt{3} - 432)}{13 (z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432)}
+\end{pmatrix}
+\end{aligned}
+    \label{eq:stability_function}
+\end{equation}
+
+\subsection{Облась устойчивости}
+Далее для нахождения области устойчивости рассмотрим собственные числа (\ref{eq:stability_function}).
+{\footnotesize
+\begin{multline}
+    \lambda_{1} = \frac{-(6 \sqrt{3} z^{4} - 11 z^{4} + 132 \sqrt{3} z^{2} - 204 z^{2} + 288 \sqrt{3}}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432} + \\ \frac{2 \sqrt{57 z^8 - 33 \sqrt{3} z^8 + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416  \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432} \\
+    \lambda_{2} = \frac{-(6 \sqrt{3} z^{4} - 11 z^{4} + 132 \sqrt{3} z^{2} - 204 z^{2} + 288 \sqrt{3}}{(-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432)} - \\ \frac{2 \sqrt{57 z^{8} - 33 \sqrt{3} z^{8} + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416 \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{(-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432)}
+\end{multline}}
+\pagebreak
+
+\specialsection{Выводы}
+Здесь выводы
+\pagebreak
+
+\specialsection{Заключение}
+тут заключение
+\pagebreak
+
+\begin{thebibliography}{1}
+\bibitem{code} https://github.com/potomushozhenya/qualifWork
+\bibitem{srk} Олемской И. В. \flqq Методы интегрирования систем структурно разделенных дифференциальных уравнений\frqq. Издательство С.-Петербургского университета, 2009, стр. 69-91.
+\bibitem{tree} Хайрер Э., Нёрсетт С., Ваннер Г. \flqq Решение обыкновенных дифференциальных уравнений\frqq. Издательство Москва Мир, 1990, стр. 150-163.
+\bibitem{mirk} K. Burrage, F. H. Chipman, P. H. Muir \flqq Order results for Mono-Implicit Runge-Kutta methods\frqq.  SIAM J. Numer. Anal. Vol. 31, No. 3, pp. 876-891, 1994
+\bibitem{stability} Винничек Н. Н. \flqq Численная устойчивость разделяющихся методов решения систем обыкновенных дифференциальных уравнений\frqq  Санкт-Петербургский государственный университет, 2018, стр. 9-31
+\end{thebibliography}
+\pagebreak
+
+\specialsection{Приложение}
+\end{document}
