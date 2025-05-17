@@ -25,6 +25,7 @@
 
 \usepackage{amsthm,amssymb, amsmath}
 \usepackage{textcomp}
+\usepackage{yfonts}
 
 
 \begin{document}
@@ -43,11 +44,11 @@
 
 Отсутствие однородности в реальных задачах, когда встречаются задачи, которые не являются исключительно жёсткими или нежёсткими, а представляют собой их сочетание, стало важным стимулом для улучшения и развития численных методов решения как жёстких, так и нежёстких задач.
 
-Рассматриваемая далее система вида (\ref{eq:base_system}) возникает при описании задач небесной механики, оптимального управления, физики высоких энергий \cite{srk}.
+Рассматриваемая далее система вида (\ref{eq:base_system}) возникает при описании задач небесной механики, оптимального управления, физики высоких энергий \cite{OlemskoyBook2009}.
 \pagebreak
 
 \specialsection{Постановка задачи}
-Методы решения структурно разделенных систем обыкновенных дифференциальных уравнений класса A(2) хорошо себя зарекомендовали с точки зрения критерия "вычислительные затраты/точность", а также показывают себя лучше явных методов РК в численной устойчивости.
+Методы решения структурно разделенных систем обыкновенных дифференциальных уравнений класса \textswab{A}(2) хорошо себя зарекомендовали с точки зрения критерия "вычислительные затраты/точность". Они позволяют получить требуемый порядок за меньшее число этапов, чем классический метод РК.
 
 С другой стороны для жестких задач используются неявные методы РК, однако требуют наибольшего времени вычисления и ресурсов. Поскольку при их использовании возникает необходимость в решении векторной нелинейной системы.
 
@@ -61,8 +62,18 @@
 \specialsection{Обзор литературы}
 Для написания данной работы были изучены и использованы научная и учебно-методическая литература, статьи студентов факультета прикладной математики - процессов управления.
 
-Основными источниками стали монография доктора физико-
-математических наук Олемского Игоря Владимировича \cite{srk}, описывающая структурные методы и приводящая их расчетные схемы и условия порядка, и статья \cite{mirk}, отражающая моно-неявные методы и приводящяя их расчетные схемы. Информация по устойчивости была взята из магистерской диссертации Винничек Никиты Николаевича.
+Значительное количество исследований, посвящённых численным методам решения систем обыкновенных дифференциальных уравнений (ОДУ), сосредоточено на подходах, основанных на разбиении системы на две (реже — более) подсистемы, к каждой из которых применяется свой численный метод. При этом, несмотря на различие методов, они остаются взаимосвязанными. Одними из первых стратегий такого рода стали разделения на линейные и нелинейные, а также на жёсткие и нежёсткие компоненты (см., например,\cite{Hofer1976}). В дальнейшем подобные подходы применялись для выделения быстрых и медленных процессов в сложных системах\cite{ShomeEtAl2004, SanduGuenther2016}, при решении уравнений в частных производных~\cite{KetchesonEtAl2016}, а также при разработке симплектических методов~\cite{KalogiratouEtAl2011}.
+
+Среди методов такого рода особое внимание заслуживает подход, предложенный И.В.Олемским. Основу разделения в этом случае составляет структура зависимости правых частей системы ОДУ от её неизвестных функций. Было установлено, что во многих ситуациях возможно построение явных методов типа Рунге—Кутты, позволяющих достичь заданного порядка точности с меньшим числом вычислений правых частей по сравнению с классическими методами Рунге—Кутты, применяемыми без предварительного разделения. В частности, Олемскому удалось распространить идею, лежащую в основе методов Рунге—Кутты—Нюстрёма\cite{tree}, на системы, разбитые на две части с перекрёстной зависимостью. В ряде его работ были предложены методы третьего порядка с двумя этапами, четвёртого — с тремя\cite{Olemskoy2003}, и пятого порядка — с четырьмя этапами~\cite{Olemskoy2002}.
+
+Методы MIRK активно изучаются в научной литературе множеством авторов на протяжении более тридцати лет. Изначально один из подклассов этих методов был предложен для решения задач Коши в работе \cite{Cash1975}. Полный класс методов MIRK был представлен для задач с начальным значением в работах \cite{Bokhoven1980} и \cite{Cash1982}. Обзор существующих методов содержится в \cite{Muir1987}.
+
+Для задач начального значения по ОДУ применение MIRK-схем оказывается по вычислительным затратам сопоставимым с лучшими реализациями более общего класса неявных методов РК (IRK). Что касается задач с граничными условиями (BVP), MIRK-методы анализировались в \cite{Cash1980}, \cite{Cash1982}, \cite{Enright1986} и \cite{Gupta1985}. При решении таких задач они могут быть реализованы столь же эффективно, как и явные методы Рунге-Кутты \cite{Enright1986}.
+
+Методы MIRK применялись при разработке программного пакета HAGRON, ориентированного на численное решение граничных задач с использованием отложенных поправок \cite{Cash1991}. Более того, недавно MIRK-схемы были внедрены в другой программный комплекс, использующий непрерывные расширения этих методов для контроля дефектов при численном решении BVP-задач \cite{Muir1993}.
+
+Основная часть указанных публикаций была посвящена разработке конкретных MIRK-методов и их эффективной реализации. Кроме того, в работах \cite{Bokhoven1980} и \cite{Gupta1985} проводился анализ условий порядка для MIRK-методов и их связи с классическими условиями Бутчера, характерными для стандартных IRK-схем. Более полный анализ подклассов с малым числом этапов и максимальным порядком s-этапного метода дан в \cite{mirk}. 
+
 \pagebreak
 
 \section{Существующие методы}
@@ -70,81 +81,77 @@
 Все дальнейшие рассуждения, кроме \ref{subsecMIRK} будем вести о следующей системе:
 \begin{equation}
 \begin{cases}
-         \dv{y_1}{x} &= f_1(x,y_2) \\
-         \dv{y_2}{x} &= f_2(x,y_1)
+         \dv{y_1}{x} &= f_1(x,y_2), \\
+         \dv{y_2}{x} &= f_2(x,y_1),
 \end{cases}
 \label{eq:base_system}
 \end{equation}
 \begin{equation}
-    y_{s}(X_{0}) = y_{s0}, \quad s = 1,2, \quad x \in [X_{0},X_{1}] \subset R,
+    y_{s}(X_{0}) = y_{s0}, \quad s = 1,2, \quad x \in [X_{0},X_{1}] \subset R.
 \end{equation}
 \subsection{Структурный метод}
-По \cite{srk} схема рассчета для структурного метода РК описывается:
+По \cite{OlemskoyBook2009} схема рассчета для структурного метода РК описывается:
 \begin{equation}
-    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2 
+    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2,
 \end{equation}
 \begin{equation}
 \begin{aligned}
     k_{1l} &= 
 \begin{cases}
-    f_{1}(x + c_{11} h, y_{2i}), \quad l = 1 \\
-    f_{1}(x + c_{1l} h, y_{2i} + h \sum_{n=1}^{l-1} a_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1}
+    f_{1}(x + c_{11} h, y_{2i}), \quad l = 1, \\
+    f_{1}(x + c_{1l} h, y_{2i} + h \sum_{n=1}^{l-1} a_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1},
 \end{cases}
     \\k_{2l} &= 
-    f_{2}(x + c_{2l} h, y_{1i} + h \sum_{n=1}^{l-1} a_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2}
+    f_{2}(x + c_{2l} h, y_{1i} + h \sum_{n=1}^{l-1} a_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2},
 \end{aligned}
 \end{equation}
 \subsection{Мононеявный метод}\label{subsecMIRK}
 По \cite{mirk} схема рассчета для моно-неявного метода РК описывается:
 \begin{equation}
-    y_{i+1} = y_{i} + h \sum_{l=1}^{s} b_{l} k_{l}
+    y_{i+1} = y_{i} + h \sum_{l=1}^{s} b_{l} k_{l},
 \end{equation}
 \begin{equation}
     k_{l} = 
-    f(x + c_{l} h, (1 - v_{l}) y_{1i} + v_{l} y_{1,i+1} + h \sum_{n=1}^{s} x_{ln} k_{n}), \quad l = 1, \dotsc, s
+    f(x + c_{l} h, (1 - v_{l}) y_{1i} + v_{l} y_{1,i+1} + h \sum_{n=1}^{s} x_{ln} k_{n}), \quad l = 1, \dotsc, s.
 \end{equation}
 \pagebreak
 
 \section{Предложенный метод}
 \subsection{Схема}
 \begin{equation}
-    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2
+    y_{s,i+1} = y_{s,i} + h \sum_{l=1}^{m_{s}} b_{sl} k_{sl} \quad s = 1, 2,
     \label{eq:method}
 \end{equation}
 \begin{equation}
 \begin{aligned}
     k_{1l} &= 
 \begin{cases}
-    f_{1}(x + c_{11} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1}), \quad l = 1 \\
-    f_{1}(x + c_{1l} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1} + h \sum_{n=1}^{l-1} x_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1}
+    f_{1}(x + c_{11} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1}), \quad l = 1 \\,
+    f_{1}(x + c_{1l} h, (1 - v_{11}) y_{2i} + v_{11} y_{2,i+1} + h \sum_{n=1}^{l-1} x_{1ln} k_{2n}), \quad l = 2, \dotsc, m_{1},
 \end{cases}
     \\k_{2l} &= 
-    f_{2}(x + c_{2l} h, (1 - v_{2l}) y_{1i} + v_{2l} y_{1,i+1} + h \sum_{n=1}^{l-1} x_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2}
+    f_{2}(x + c_{2l} h, (1 - v_{2l}) y_{1i} + v_{2l} y_{1,i+1} + h \sum_{n=1}^{l-1} x_{2ln} k_{1n}), \quad c_{21} \not= 0, l = 1, \dotsc, m_{2},
 \end{aligned}
+\label{eq:method_k}
 \end{equation}
 \begin{equation}
-    s_{1} = 3 \quad s_{2} = 2
+    m_{s_{1}} = 3 \quad m_{s_{2}} = 2.
 \end{equation}
-\begin{equation}
-I_{i} = \underbrace{\left[
-    1, \dotsc, 1
-    \right]}_{i}
-\end{equation}
-Коэффициенты в общем виде выглядят следующим образом
+Коэффициенты в общем виде можно объединить в матрицы и векторы
 \begin{equation}
 C_{1} =
 \begin{pmatrix}
     c_{1,1} & 0 & 0 \\
     0 & c_{1,2} & 0 \\
     0 & 0 & c_{1,3}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 C_{2} =
 \begin{pmatrix}
     c_{2,1} & 0 \\
     0 & c_{2,2}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 X_{1} = 
@@ -152,109 +159,114 @@ X_{1} =
     0 & 0 \\
     x_{1,2,2,1} & 0 \\
     x_{1,3,2,1} & x_{1,3,2,2}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 X_{2} = 
 \begin{pmatrix}
     x_{2,1,1,1} & 0 & 0\\
     x_{2,2,1,1} & x_{2,2,1,2} & 0 
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
     v_{1} = \left[
     v_{1,2,1}, v_{1,2,2}, v_{1,2,3}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     v_{2} = \left[
     v_{2,1,1}, v_{2,1,2}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     b_{1} = \left[
     b_{1,1}, b_{1,2}, b_{1,3}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     b_{2} = \left[
     b_{2,1}, b_{2,2}
-    \right]
+    \right].
 \end{equation}
-Вспомогательные матрицы для удобства записи условий порядка.
+Введем вспомогательные матрицы и вектора для удобства записи условий порядка.
+\begin{equation}
+I_{i} = \underbrace{\left[
+    1, \dotsc, 1
+    \right]}_{i},
+\end{equation}
 \begin{equation}
 A_{1} = 
 \begin{pmatrix}
     v_{1,2,1} b_{2,1} & v_{1,2,1} b_{2,2} \\
     v_{1,2,2} b_{2,1} + x_{1,2,2,1} & v_{1,2,2} b_{2,2} \\
     v_{1,2,3} b_{2,1} + x_{1,3,2,1} & v_{1,2,3} b_{2,2} + x_{1,3,2,2}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 A_{2} = 
 \begin{pmatrix}
     v_{2,1,1} b_{1,1} + x_{2,1,1,1} & v_{2,1,1} b_{1,2} & v_{2,1,1} b_{1,3}\\
     v_{2,1,2} b_{1,1} + x_{2,2,1,1} & v_{2,1,2} b_{1,2} + x_{2,2,1,2} & v_{2,1,2} b_{1,3}
-\end{pmatrix}
+\end{pmatrix}.
 \end{equation}
 
 \subsection{Условия порядка}\label{order_conditions}
 Условия порядка для предложенного метода 4-го порядка. Полученны как удовлетворенные условия на соответствующие деревья из \cite{tree}.
 Далее для s = 1, 2
 \begin{equation}
-U_{1} = I_{3}, \quad U_{2} = I_{2}
+U_{1} = I_{3}, \quad U_{2} = I_{2},
 \end{equation}
 \begin{equation}
-A_{s} U_{s} - C_{s} U_{s}
+A_{s} U_{s} - C_{s} U_{s},
 \end{equation}
 \begin{equation}
-B_{s} U_{s} = 1
+B_{s} U_{s} = 1,
 \end{equation}
 \begin{equation}
-B_{s} C_{s}^{i} U_{s} = \frac{1}{i+1}, \quad i = 1, 2, 3
+B_{s} C_{s}^{i} U_{s} = \frac{1}{i+1}, \quad i = 1, 2, 3,
 \end{equation}
 \begin{equation}
-B_{s} A_{s} C_{s}^{i} U_{s} = \frac{1}{6*i}, \quad i = 1, 2
+B_{s} A_{s} C_{s}^{i} U_{s} = \frac{1}{6i}, \quad i = 1, 2,
 \end{equation}
 \begin{equation}
-B_{s} C_{s} A_{s} C_{s} U_{s} = \frac{1}{8}
+B_{s} C_{s} A_{s} C_{s} U_{s} = \frac{1}{8},
 \end{equation}
 \begin{equation}
-B_{s} A_{s} A_{s} C_{s} U_{s} = \frac{1}{24}
+B_{s} A_{s} A_{s} C_{s} U_{s} = \frac{1}{24}.
 \end{equation}
 
 \subsection{Удовлетворенные условия}\label{conditions}
-Далее будут приведены коэффициенты, удовлетворяющие условиям из \ref{order_conditions}. При их вычислении два раза были выбраны корни для квадратных уравнений, после чего получилась система с одним параметром. Параметр был выбран равный 0.
+Далее будут приведены коэффициенты, удовлетворяющие условиям из \ref{order_conditions}. При их вычислении два раза были выбраны корни для квадратных уравнений, после чего получилась система с одним параметром $x_{132}$. Параметр был выбран равный 0.
 
 \begin{equation}
     c_{1} = \left[
     1, \frac{2}{3} + \frac{\sqrt{2}}{6}, \frac{\sqrt{2}}{6}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     c_{2} = \left[
     \frac{1}{2} - \frac{\sqrt{3}}{6}, \frac{2}{3} + \frac{\sqrt{2}}{6}, \frac{\sqrt{2}}{6}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     v_{1} = \left[
     1, \frac{2}{3} + \frac{\sqrt{2}}{6} - \frac{\sqrt{3}}{6} + \frac{\sqrt{6}}{18}, \frac{-\sqrt{6}}{6} + \frac{\sqrt{2}}{6} + \frac{\sqrt{3}}{18}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     v_{2} = \left[
     \frac{2}{3} - \frac{\sqrt{3}}{6}, \frac{4}{3} - \frac{\sqrt{2}}{3} + \frac{\sqrt{3}}{6}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     b_{1} = \left[
     \frac{-1}{17} - \frac{3\sqrt{2}}{17}, \frac{3}{4}, \frac{21}{68} + \frac{3\sqrt{2}}{17}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
     b_{2} = \left[
     \frac{1}{2}, \frac{1}{2}
-    \right]
+    \right],
 \end{equation}
 \begin{equation}
 X1 = 
@@ -262,78 +274,93 @@ X1 =
     0, 0\\
     \frac{-\sqrt{6}}{18} + \frac{\sqrt{3}}{6}, 0\\
     \frac{\sqrt{6}}{6} - \frac{\sqrt{3}}{18}, 0
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 X2 = 
 \begin{pmatrix}
     \frac{-1}{6}, 0, 0\\
     \frac{1}{6} + \frac{\sqrt{2}}{3}, -1, 0
-\end{pmatrix}
+\end{pmatrix}.
 \end{equation}
 
 Удовлетворенные условия порядка в общем виде можно посмотреть в репозитории \cite{code}.
 \pagebreak
 
-\section{Численные эксперименты}
-Будем проводить эксперименты для установления порядка метода. Для эксеприментов будем использовать мною написанный код с вышепредложенным методом \cite{code}. \newline
-Рассмотрим задачу вида
+\section{Численные эксперименты}\label{numeric}
+Проведем эксперименты для установления порядка метода. Вышепредложенный метод реализован на языке Python с использованием бибилотек NumPy и SciPy. Программный код реализации доступен в \cite{code}. Рассмотрим две задачию. \newline
+Задача 1.
 \begin{equation}
 \begin{aligned}
-    y_{1}' &= -y_{2} + e^{-x} \\
-    y_{2}' &= y_{1} + e^{-x} \\
-    x_{0} &= 0, y_{1}(0) = y_{2}(0) = 1, x_{end} = 1
+    y_{1}' &= -y_{2} + e^{-x}, \\
+    y_{2}' &= y_{1} + e^{-x}, \\
+    x_{0} &= 0, y_{1}(0) = y_{2}(0) = 1, x_{end} = 1,
 \end{aligned}
 \end{equation}
 Аналитическое решение выглядит следующим образом
 \begin{equation}
 \begin{aligned}
-    y_{1} &= 2 \cos(x) - \sin(x) - e^{-x} \\
-    y_{2} &= 2 \sin(x) + \cos(x)
+    y_{1} &= 2 \cos(x) - \sin(x) - e^{-x}, \\
+    y_{2} &= 2 \sin(x) + \cos(x).
 \end{aligned}
 \end{equation}
-Далее приведена таблица с максимальным модулем разности с аналитическим решением и соответствующим шагом. 
+Решаем задачу с постоянным шагом h. Порядок будем определять по форумле (\ref{eq:order}).
+\begin{equation}
+p = \log_{2}(\frac{E_{h}}{E_{\frac{h}{2}}})
+\label{eq:order}
+\end{equation}
+Далее приведена таблица с глобальной прогрешностью $E_{h}$ в зависимости от шага h. 
 \begin{center}
-\begin{tabular}{ |c|c|c|c| } 
+\begin{tabular}{ |c|c|c|c|c| } 
 \hline
-0.1& 0.05 & 0.025 & 0.0125 \\ 
-$1.46050\cdot10^{-6}$ & $8.32381\cdot10^{-8}$ & $5.20788\cdot10^{-9}$ & $3.29724\cdot10^{-10}$ \\ 
+h & 0.1& 0.05 & 0.025 & 0.0125 \\ 
+\hline
+$E_{h}$ & $1.46050\cdot10^{-6}$ & $8.32381\cdot10^{-8}$ & $5.20788\cdot10^{-9}$ & $3.29724\cdot10^{-10}$ \\ 
 \hline
 \end{tabular}
 \end{center}
-Из чего можем сделать вывод, что порядок для этой задачи соблюдается.
-Далее рассмотрим задачу
+Рассчитаем \ref{eq:order} для каждых двух соседних столбцов.
+\begin{equation}
+\log_{2}(\frac{E_{0.1}}{E_{0.05}}) = 4.13307, \quad \log_{2}(\frac{E_{0.05}}{E_{0.025}}) = 3.99848 , \quad \log_{2}(\frac{E_{0.025}}{E_{0.0125}}) = 3.98137
+\end{equation}
+Из чего можем сделать вывод, что порядок для этой задачи соблюдается. \newline
+Задача 2.
 \begin{equation}
 \begin{aligned}
-    y_{1}' &= -y_{2} + e^{-20x} \\
-    y_{2}' &= y_{1} + e^{-20x} \\
-    x_{0} &= 0, y_{1}(0) = y_{2}(0) = 1, x_{end} = 1
+    y_{1}' &= -y_{2} + e^{-20x}, \\
+    y_{2}' &= y_{1} + e^{-20x}, \\
+    x_{0} &= 0, y_{1}(0) = y_{2}(0) = 1, x_{end} = 1,
 \end{aligned}
 \end{equation}
 Аналитическое решение выглядит следующим образом
 \begin{equation}
 \begin{aligned}
-    y_{1} &= \frac{422}{401} \cos(x) - \frac{420}{401} \sin(x) - \frac{21}{401 e^{20x}} \\
-    y_{2} &= \frac{420}{401} \cos(x) + \frac{422}{401} \sin(x) - \frac{19}{401 e^{20x}}
+    y_{1} &= \frac{422}{401} \cos(x) - \frac{420}{401} \sin(x) - \frac{21}{401 e^{20x}}, \\
+    y_{2} &= \frac{420}{401} \cos(x) + \frac{422}{401} \sin(x) - \frac{19}{401 e^{20x}}.
 \end{aligned}
 \end{equation}
-Далее приведена таблица с максимальным модулем разности с аналитическим решением и соответствующим шагом.
+Далее приведена таблица с глобальной прогрешностью $E_{h}$ в зависимости от шага h.
 \begin{center}
-\begin{tabular}{ |c|c|c|c| } 
+\begin{tabular}{ |c|c|c|c|c| } 
 \hline
-0.1& 0.05 & 0.025 & 0.0125 \\ 
-$2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485\cdot10^{-8}$ \\ 
+h & 0.1& 0.05 & 0.025 & 0.0125 \\ 
+$E_{h}$ & $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485\cdot10^{-8}$ \\ 
 \hline
 \end{tabular}
 \end{center}
+Рассчитаем \ref{eq:order} для каждых двух соседних столбцов.
+\begin{equation}
+\log_{2}(\frac{E_{0.1}}{E_{0.05}}) = 3.82289 , \quad \log_{2}(\frac{E_{0.05}}{E_{0.025}}) = 3.94099 , \quad \log_{2}(\frac{E_{0.025}}{E_{0.0125}}) = 3.97841
+\end{equation}
+Из чего можем сделать вывод, что порядок для этой задачи соблюдается c небольшой погрешность для самого большого шага.
 \pagebreak
 
 \section{Устойчивость метода}
 \subsection{Функция устойчивости в общем виде}
 \begin{equation}
 \begin{cases}
-    y_{1}'(x) = \lambda y_{2}(x) \\
-    y_{2}'(x) = \lambda y_{1}(x)
+    y_{1}'(x) = \lambda y_{2}(x), \\
+    y_{2}'(x) = \lambda y_{1}(x).
 \end{cases}
 \label{eq:test_system}
 \end{equation}
@@ -342,25 +369,38 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
 
 \begin{equation}
 \begin{aligned}
-    y_{11} = y_{10} + z b_1^T Y_{12} \\
-    y_{21} = y_{20} + z b_2^T Y_{21}
+    y_{11} = y_{10} + z b_1^T Y_{12}, \\
+    y_{21} = y_{20} + z b_2^T Y_{21},
 \end{aligned}    
+\label{eq:one_step}
 \end{equation}
-
+$Y_{12}$ и $Y_{21}$ представляют собой вектора вида.
 \begin{equation}
 \begin{aligned}
-    Y_{12i} = (1 - v_{1i}) y_{20} + v_{1i} y_{21} + \sum_{j=1}^{i-1} x_{12ij} f_{2} (Y_{21j}) \\
-    Y_{21i} = (1 - v_{2i}) y_{10} + v_{2i} y_{11} + \sum_{j=1}^{i} x_{21ij} f_{1} (Y_{12j})
+Y_{12} = \left[
+Y_{121}, \dotsc, Y_{12m_{1}}
+\right], \\
+Y_{21} = \left[
+Y_{211}, \dotsc, Y_{21m_{2}}
+\right],
 \end{aligned}
 \end{equation}
-
+Выражаем $Y_{12i}$ и $Y_{21i}$ согласно (\ref{eq:method_k}), учитывая особенности системы (\ref{eq:test_system}).
 \begin{equation}
 \begin{aligned}
-    Y_{21} = (I_{s2} - v_{2}) y_{10} + v_{2} y_{11} + z X_{21} Y_{12} \\
-    Y_{12} = (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} + z X_{12} Y_{21}
+    Y_{12i} = (1 - v_{1i}) y_{20} + v_{1i} y_{21} + \sum_{j=1}^{i-1} x_{12ij} f_{2} (Y_{21j}),\\
+    Y_{21i} = (1 - v_{2i}) y_{10} + v_{2i} y_{11} + \sum_{j=1}^{i} x_{21ij} f_{1} (Y_{12j}),
+\end{aligned}
+\label{eq:Y_i}
+\end{equation}
+Запишем уравнения (\ref{eq:Y_i}) в векторном виде.
+\begin{equation}
+\begin{aligned}
+    Y_{21} = (I_{s2} - v_{2}) y_{10} + v_{2} y_{11} + z X_{21} Y_{12}, \\
+    Y_{12} = (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} + z X_{12} Y_{21},
 \end{aligned}
 \end{equation}
-
+Далее запишем матричное уравнение.
 \begin{equation}
     \begin{pmatrix} Y_{12}\\ Y_{21} \end{pmatrix}
     = \begin{pmatrix}
@@ -370,9 +410,10 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
     \begin{pmatrix}
         (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} \\
         (I_{s2} - v_{2}) y_{10} + v_{2} y_{11}
-    \end{pmatrix}
+    \end{pmatrix},
+\label{eq:Y_matrix}
 \end{equation}
-
+Подставим (\ref{eq:Y_matrix}) в (\ref{eq:one_step})
 \begin{equation}
     \begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
     = 
@@ -389,8 +430,9 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
     \begin{pmatrix}
         (I_{s1} - v_{1}) y_{20} + v_{1} y_{21} \\
         (I_{s2} - v_{2}) y_{10} + v_{2} y_{11}
-    \end{pmatrix}
+    \end{pmatrix},
 \end{equation}
+Введем обозначение и через него выразим уравнение выше.
 \begin{equation}
 \begin{pmatrix}
          b_{1}^{T} & 0 \dotsc 0 \\
@@ -400,11 +442,11 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
         E & -z X_{12} \\
         -z X_{21} & E
     \end{pmatrix}^{-1}
-=
+=:
 \begin{pmatrix}
     d_{11} & d_{12} \\
     d_{21} & d_{22}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
     \begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
@@ -425,8 +467,9 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
         v_{1} y_{21} \\
         v_{2} y_{11} 
     \end{pmatrix}
-    \right]
+    \right],
 \end{equation}
+Раскроем полседнюю скобку и приведем подобные слагаемые.
 \begin{equation}
 \begin{pmatrix}
     1 - z d_{12} v_{2} & -z d_{11} v_{1} \\
@@ -438,26 +481,29 @@ $2.97881\cdot10^{-4}$ & $2.10493\cdot10^{-5}$ & $1.37051\cdot10^{-6}$ & $8.69485
     1 + z d_{12} (I_{s2} - v_{2}) & z d_{11} (I_{s1} - v_{1}) \\
     z d_{22} (I_{s2} - v_{2}) & 1 + z d_{21} (I_{s1} - v_{1})
 \end{pmatrix}
-\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix},
 \end{equation}
+Выразим уравнение выше через (\ref{eq:P}) и (\ref{eq:stability_general})
 \begin{equation}
 P(z, w_{1}, w_{2}) = 
 \begin{pmatrix}
     1 + z d_{12} w_{2} & z d_{11} w_{1} \\
     z d_{22} w_{2} & 1 + z d_{21} w_{1}
-\end{pmatrix}
+\end{pmatrix},
+\label{eq:P}
 \end{equation}
 \begin{equation}
-    R(z) = P^{-1}(z , -v_{1}, -v_{2}) P(z, I_{s1} - v_{1}, I_{s2} - v_{2})
+    R(z) = P^{-1}(z , -v_{1}, -v_{2}) P(z, I_{s1} - v_{1}, I_{s2} - v_{2}),
     \label{eq:stability_general}
 \end{equation}
+Окончательно получаем
 \begin{equation}
 \begin{pmatrix} y_{11}\\ y_{21} \end{pmatrix}
     = R(z)
-\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}
+\begin{pmatrix} y_{10}\\ y_{20} \end{pmatrix}.
 \end{equation}
 
-\subsection{Функция устойчивости для метода}
+\subsection{Функция устойчивости для предложенного метода}
 
 Подставим в (\ref{eq:stability_general}) коэффициенты из \ref{conditions}.
 \begin{equation}
@@ -476,24 +522,25 @@ P(z, w_{1}, w_{2}) =
  \begin{pmatrix}
     d_{11} & d_{12} \\
     d_{21} & d_{22}
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 \begin{equation}
 \begin{gathered}
     d_{11} = \left[
     \frac{-\sqrt{3} (36 \sqrt{6} + 17 z^{2} + 12 \sqrt{3})}{612}, \frac{3}{4}, \frac{21}{68} + \frac{3 \sqrt{2}}{17}
-    \right] \\
+    \right], \\
     d_{12} = \left[
     \frac{\sqrt{3} z}{6}, 0
-    \right] \\
+    \right], \\
     d_{21} = \left[
     \frac{-(\sqrt{6} - 3 \sqrt{3}) z (36 \sqrt{6} + 7 z^{2} + 24 \sqrt{3})}{1512}, \frac{-z}{2}, 0
-    \right] \\
+    \right], \\
     d_{22} = \left[
     \frac{(\sqrt{6} - 3 \sqrt{3}) (-18 \sqrt{3} + 7 z^{2} - 6 \sqrt{6})}{252}, \frac{1}{2}
-    \right]
+    \right],
 \end{gathered}
 \end{equation}
+Итого функция выглядит следующим образом.
 {\footnotesize
 \begin{equation}
     R(z) = 
@@ -502,7 +549,7 @@ P(z, w_{1}, w_{2}) =
     \frac{(-2 + \sqrt{3}) (z^{2} + 12) (z^{2} - 12 \sqrt{3}) z}{z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432}\\
     \frac{12 (-5 + 3 \sqrt{3}) (z^{2} + 6 \sqrt{3} + 18) z}{z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432} &
     \frac{(-11 + 6 \sqrt{3}) (13 z^{4} - 228 \sqrt{3} z^{2} - 132 z^{2} - 576 \sqrt{3} - 432)}{13 (z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288 \sqrt{3} - 432)}
-\end{pmatrix}\label{eq:stability_function}
+\end{pmatrix}. \label{eq:stability_function}
 \end{equation}}
 
 \subsection{Облась устойчивости}
@@ -511,15 +558,15 @@ P(z, w_{1}, w_{2}) =
 \begin{equation}
 \begin{gathered}
     \lambda_{1}(z) = \frac{-(6 \sqrt{3} z^{4} - 11 z^{4} + 132 \sqrt{3} z^{2} - 204 z^{2} + 288 \sqrt{3}}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432} + \\ 
-\frac{2 \sqrt{57 z^8 - 33 \sqrt{3} z^8 + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416  \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432} \\
+\frac{2 \sqrt{57 z^8 - 33 \sqrt{3} z^8 + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416  \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432}, \\
     \lambda_{2}(z) = \frac{-(6 \sqrt{3} z^{4} - 11 z^{4} + 132 \sqrt{3} z^{2} - 204 z^{2} + 288 \sqrt{3}}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432} - \\ 
-\frac{2 \sqrt{57 z^{8} - 33 \sqrt{3} z^{8} + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416 \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432}
+\frac{2 \sqrt{57 z^{8} - 33 \sqrt{3} z^{8} + 2304 z^{6} - 1332 \sqrt{3} z^{6} + 28512 z^{4} - 16416 \sqrt{3} z^{4} + 108864 z^{2} - 62208 \sqrt{3} z^{2}} - 432)}{-z^{4} + 12 \sqrt{3} z^{2} - 12 z^{2} - 288 \sqrt{3} + 432},
 \end{gathered}
 \end{equation}}
 
-После чего определим функцию (\ref{eq:stab_area_func}) и посмотрим на ее график при чисто мнимых аргументах.
+После чего определим функцию (\ref{eq:stab_area_func}) и посмотрим на ее график при чисто мнимых аргументах. Потому что, если рассматривать всю комплексную область, то общее решение не бывает устойчивым и притягивающим \cite{stability}.
 \begin{equation}
-    M(z) = max(\lvert \lambda_{1}(z) \rvert, \lvert \lambda_{2}(z) \rvert), \quad z \in \mathbb{C}
+    M(z) = max(\lvert \lambda_{1}(z) \rvert, \lvert \lambda_{2}(z) \rvert), \quad z \in \mathbb{C}.
 \label{eq:stab_area_func}
 \end{equation}
 
@@ -533,11 +580,67 @@ P(z, w_{1}, w_{2}) =
      M(z) при Re(z) = 0.}
 \end{center}
 \end{figure}
+У функции есть небольшой всплеск от 3.45 до 5.35. Однако этот метод можно смело применять на практике. Как мы и убедились в \ref{numeric}. Считаю, что задачу 2 можно считать жетской.
 
+Также был применен альтернативный подход из 2.2.2 \cite{stabilbity}.
+Были получены функции, представляющие собоб сумму по столбцам.
+\begin{equation}
+\begin{gathered}
+R_{1} = \frac{(-11 + 6\sqrt{3})(13 z^{4} - 228\sqrt{3} z^{2} - 132 z^{2} - 576 \sqrt{3} - 432)}{13 (z^{4} - 12 \sqrt{3} z^{2} + 12 z^{2} + 288\sqrt{3} - 432)} + \\ \frac{12 (-5 + 3\sqrt{3}) (z^{2} + 6\sqrt{3} + 18) z}{z^{4} - 12\sqrt{3} z^{2} + 12 z^{2} + 288\sqrt{3} - 432}, \\
+R_{2} = \frac{(-11 + 6\sqrt{3}) (13 z^{4} - 228\sqrt{3} z^{2} - 132 z^{2} - 576\sqrt{3} - 432)}{13 (z^{4} - 12\sqrt{3} z^{2} + 12 z^{2} + 288\sqrt{3} - 432)} + \\ \frac{(-2 + \sqrt{3}) (z^{2} + 12) (z^{2} - 12\sqrt{3}) z}{z^{4} - 12\sqrt{3} z^{2} + 12 z^{2} + 288\sqrt{3} - 432}
+\end{gathered}
+\end{equation}
+Построим область $\lvert R_{1} \rvert \leq 1 \cap \lvert R_{2} \rvert \leq 1$.
+
+\begin{figure}[ht]
+\begin{center}
+\scalebox{0.2}{
+   \includegraphics{images/1.jpg}
+}
+\caption{
+\label{stab_area_another}
+     $\lvert R_{1} \rvert \leq 1 \cap \lvert R_{2} \rvert \leq 1$}
+\end{center}
+\end{figure}
+
+Область шире, чем у явного метода, однако не такая как у неявного. Из дальнейших рассуждений будет понятно, почему так происходит. 
+\pagebreak
+
+\begin{figure}[ht]
+\begin{center}
+\scalebox{0.5}{
+   \includegraphics{images/4.jpg}
+}
+\caption{
+\label{stab_area_another_1}
+     $\lvert R_{1} \rvert \leq 1$}
+\end{center}
+\end{figure}
+
+Данную область можно охарактеризовать как похожую на те, что принадлежат IRK. Из чего можем заключить, что область по первой компоненте неплохая.
+\pagebreak
+
+\begin{figure}[ht]
+\begin{center}
+\scalebox{0.5}{
+   \includegraphics{images/5.jpg}
+}
+\caption{
+\label{stab_area_another_2}
+     $\lvert R_{2} \rvert \leq 1$}
+\end{center}
+\end{figure}
+
+Однако тут результат достаточно плохой. По второй компоненте область похожа на область у классического РК, хотя и достаточно шире. Становится понятно, что из-за влияния второй компоненты пересечение похоже на явный метод.
+
+Внутри области можно увидеть полую область, которая появляется из-за специфического вида функции устойчивости. А конкретно из-за того, что элементы представляют собой дроби.
+
+Также стоит сказать, что возможно другие методы этого класса будет иметь лучшую область по сравнению с \ref{stab_area_another}.
 \pagebreak
 
 \specialsection{Выводы}
-Здесь выводы
+
+Был получен метод, который можно использовать на практике. Поскольку он требует меньшего количества вычислений чем IRK при достаточно хорошей точности. Однако в данной работе не был рассмотрен весь класс, а лишь предложен конкретный. Сформулирована схема для этого класса. Также были определены условия 4 порядка. При необходимости можно расширить рассужденя для большего порядка. В работе даны выкладки для нахождения функции устойчивости любого метода класса.
 \pagebreak
 
 \specialsection{Заключение}
@@ -545,10 +648,51 @@ P(z, w_{1}, w_{2}) =
 \pagebreak
 
 \begin{thebibliography}{1}
-\bibitem{srk} Олемской И. В. \flqq Методы интегрирования систем структурно разделенных дифференциальных уравнений\frqq. Издательство С.-Петербургского университета, 2009, стр. 69-91.
-\bibitem{tree} Хайрер Э., Нёрсетт С., Ваннер Г. \flqq Решение обыкновенных дифференциальных уравнений\frqq. Издательство Москва Мир, 1990, стр. 150-163.
-\bibitem{mirk} K. Burrage, F. H. Chipman, P. H. Muir \flqq Order results for Mono-Implicit Runge-Kutta methods\frqq.  SIAM J. Numer. Anal. Vol. 31, No. 3, pp. 876-891, 1994
+\bibitem{tree} Хайрер Э., Нёрсетт С., Ваннер Г. \flqq Решение обыкновенных дифференциальных уравнений\frqq Издательство Москва Мир, 1990, стр. 150-163.
+
+\bibitem{Hofer1976} Hofer E. \flqq A partially implicit method for large stiff systems of ODEs with only few equations
+introducing small time-constants\frqq SIAM Journal Numerical Analytics, 1976, vol. 13, iss. 5, pp. 645–663.
+
+\bibitem{ShomeEtAl2004} Shome S. S., Haug E. J., Jay L. O. \flqq Dual-rate integration using partitioned Runge--Kutta methods for mechanical systems with interacting subsystems\frqq Mechanics Based Design of Structures and Machines, 2004, vol. 32, iss. 3, pp. 253–282.
+
+\bibitem{SanduGuenther2016} Sandu A., Gunther M. \flqq Multirate generalized additive Runge--Kutta methods\frqq Numerische Mathematik, 2016, vol. 133, iss. 3, pp. 497--524.
+
+\bibitem{KetchesonEtAl2016} Ketcheson D. I., MacDonald C., Ruuth S. J. \flqq Spatially partitioned embedded Runge--Kutta methods\frqq SIAM Journal Numerical Analytics, 2013, vol. 51, iss. 5, pp. 2887–2910
+
+\bibitem{KalogiratouEtAl2011} Kalogiratou Z., Monovasilis T., Simos T. E. \flqq Symplectic partitioned Runge — Kutta methods for the numerical integration of periodic and oscillatory problems\frqq Recent Advances in Computational and
+Applied Mathematics. Dordrecht, Springer Netherlands Publ., 2011, pp. 169–208.
+
+\bibitem{OlemskoyBook2009} Олемской И. В. \flqq Методы интегрирования систем структурно разделенных дифференциальных уравнений\frqq СПб: Изд-во С.-Петерб. ун-та, 2009, 182 c.
+
+\bibitem{Olemskoy2003}  Олемской И. В. \flqq Структурный подход к задаче конструирования явных одношаговых методов\frqq Ж. вычисл. матем. и матем. физ., 2003. Т.~43. №~7. C.~961--974.
+
+\bibitem{Olemskoy2002} Олемской И. В. \flqq Четырехэтапный метод пятого порядка точности численного интегрирования систем специального вида\frqq Ж. вычисл. матем. и матем. физ., 2002. Т.~42. №~8. C.~1179--1190.
+
+\bibitem{Cash1975} J. R. Cash \flqq A class of implicit Runge-Kutta methods for the numerical integration of stiff differential systems\frqq J. Assoc. Comput. Mach., 22 1975, pp. 504-511.
+
+\bibitem{Bokhoven1980} W. M. G. Van Bokhoven \flqq Efficient higher order implicit one-step methods for integration of stiff differential equations\frqq BIT, 20 1980, pp. 34-43.
+
+\bibitem{Cash1982} J. R. Cash and A. Singhal \flqq Mono-implicit Runge-Kutta formulae for the numerical integration of stiff differential systems\frqq IMA J. Numer. Anal., 2 1982, pp. 211-227.
+
+\bibitem{Muir1987} P. H. Muir and W. H. Enright \flqq Relationships among some classes of IRK methods and their stability functions\frqq BIT, 27 1987, pp. 403-423.
+
+\bibitem{Cash1980} J. R. Cash and D. R. Moore \flqq A high order method for the numerical solution of two-point boundary value problems\frqq BIT, 20 1980, pp. 44-52.
+
+\bibitem{Enright1986} W. H. Enright and P. H. Muir \flqq Efficient classes of Runge-Kutta methods for two-point boundary value problems\frqq Computing, 37 1986, pp. 315-334.
+
+\bibitem{Gupta1985} S. Gupta \flqq An adaptive boundary value Runge-Kutta solver for first order boundary value prob-
+lems\frqq SIAM J. Numer. Anal., 22 1985, pp. 114-126.
+
+\bibitem{Cash1991} J. R. Cash and M. H. Wright \flqq A deferred correction method for nonlinear two-point boundary
+value problems: implementation and numerical evaluation\frqq SIAM J. Sci. Statist. Comput., 12 1991, pp. 971-989.
+
+\bibitem{Muir1993} P. H. Muir and B. Owren \flqq Order barriers and characterizations for continuous mono-implicit
+Runge-Kutta schemes\frqq Math. Comp., Vol. 61, No. 204, 1993, pp. 675-699.
+
+\bibitem{mirk} K. Burrage, F. H. Chipman, P. H. Muir \flqq Order results for Mono-Implicit Runge-Kutta methods\frqq SIAM J. Numer. Anal. Vol. 31, No. 3, pp. 876-891, 1994
+
 \bibitem{stability} Винничек Н. Н. \flqq Численная устойчивость разделяющихся методов решения систем обыкновенных дифференциальных уравнений\frqq  Санкт-Петербургский государственный университет, 2018, стр. 9-31
+
 \bibitem{code} https://github.com/potomushozhenya/qualifWork
 \end{thebibliography}
 \pagebreak
